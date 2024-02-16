@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">corwincarrfacemakerv2</string>
+    <string-array name="hair_style_options">
+        <item>Style 1</item>
+        <item>Style 2</item>
+        <item>Style 3</item>
+    </string-array>
+</resources>
