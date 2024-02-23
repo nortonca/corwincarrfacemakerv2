@@ -70,9 +70,9 @@ public class Face {
      * Calls helper methods to draw individual face parts.
      */
     public void onDraw(Canvas canvas) {
+        drawHair(canvas);
         drawFace(canvas);
         drawEyes(canvas);
-        drawHair(canvas);
         drawMouth(canvas);
     }
 

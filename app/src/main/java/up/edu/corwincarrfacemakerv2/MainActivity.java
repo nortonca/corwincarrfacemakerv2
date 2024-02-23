@@ -160,12 +160,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Draw the face on the surface view
+    // Draw the face on the surface view with canvas clearing
     private void drawFaceOnSurface() {
         Canvas canvas = faceSurfaceView.getHolder().lockCanvas();
         if (canvas != null) {
-            face.onDraw(canvas);
-            faceSurfaceView.getHolder().unlockCanvasAndPost(canvas);
+            clearCanvas(canvas); // Clear the canvas before drawing
+            face.onDraw(canvas); // Draw the face
+            faceSurfaceView.getHolder().unlockCanvasAndPost(canvas); // Release the canvas
         }
+    }
+
+    // Method to clear the canvas with a background color
+    private void clearCanvas(Canvas canvas) {
+        canvas.drawColor(Color.WHITE); // Clears the canvas with a white color. Change this if needed.
     }
 
     // Update UI with current face attributes
