@@ -108,7 +108,7 @@ public class Face {
                 canvas.drawRect(100, 50, 300, 150, hairPaint);
                 break;
             case 2: // Long hair
-                canvas.drawRect(100, 25, 300, 150, hairPaint);
+                canvas.drawRect(100, 25, 300, 200, hairPaint);
                 break;
             case 3: // Curly hair
                 int startX = 100, startY = 50, radius = 10;
