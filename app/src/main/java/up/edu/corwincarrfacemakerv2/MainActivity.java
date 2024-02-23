@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         redSeekBar = findViewById(R.id.redSeekBar);
         greenSeekBar = findViewById(R.id.greenSeekBar);
         blueSeekBar = findViewById(R.id.blueSeekBar);
-        colorFeatureRadioGroup = findViewById(R.id.colorFeatureRadioGroup);
+        colorFeatureRadioGroup = findViewById(R.id.colorFeatureRadioGroup); // Assign RadioGroup here
         hairRadioButton = findViewById(R.id.hairRadioButton);
         eyesRadioButton = findViewById(R.id.eyesRadioButton);
         skinRadioButton = findViewById(R.id.skinRadioButton);
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         face = new Face(); // Initialize your Face object here
 
-        setupUI();
         setupListeners();
         updateUIWithFace(); // Initial UI update to reflect the random face
 
@@ -71,20 +70,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupUI() {
-        // UI setup code remains unchanged
-    }
-
     private void setupListeners() {
-        // Listeners setup code for spinner and seekbars remains unchanged
-
-        colorFeatureRadioGroup.setOnCheckedChangeListener((group, checkedId) -> updateSeekBarProgress());
+        colorFeatureRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            updateSeekBarProgress();
+            updateFaceColor(); // Update face color when the color feature changes
+        });
 
         randomFaceButton.setOnClickListener(v -> {
             face.randomize();
             updateUIWithFace();
             drawFaceOnSurface();
         });
+
+        // Listener for seek bars
+        redSeekBar.setOnSeekBarChangeListener(createSeekBarChangeListener());
+        greenSeekBar.setOnSeekBarChangeListener(createSeekBarChangeListener());
+        blueSeekBar.setOnSeekBarChangeListener(createSeekBarChangeListener());
+    }
+
+    private SeekBar.OnSeekBarChangeListener createSeekBarChangeListener() {
+        return new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) { // Check if the change is from user interaction
+                    updateFaceColor();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        };
     }
 
     private void updateFaceColor() {
@@ -104,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         // Refresh drawing or view representing the face
         drawFaceOnSurface();
     }
-
 
     private void updateSeekBarProgress() {
         // Adjust SeekBar positions based on the currently selected feature's color
@@ -130,5 +149,4 @@ public class MainActivity extends AppCompatActivity {
         // Refresh the view that displays the face if necessary
         drawFaceOnSurface(); // Example: assuming a method to draw the face on a SurfaceView
     }
-
 }
