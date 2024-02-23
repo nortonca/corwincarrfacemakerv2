@@ -14,8 +14,6 @@ import android.graphics.Color;
 import android.widget.AdapterView;
 import android.view.View;
 
-
-
 public class MainActivity extends AppCompatActivity {
 
     private Face face;
@@ -31,15 +29,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize views
+        // Initialize views from layout
         initializeViews();
+        // Create a new Face instance
         face = new Face(this);
-        // Initialize your Face object here
 
+        // Setup listeners for UI components
         setupListeners();
-        updateUIWithFace(); // Initial UI update to reflect the random face
+        // Update UI with initial face attributes
+        updateUIWithFace();
+    }
 
-        // Add this line to call the drawFace() method when the SurfaceView is ready
+    // Initialize views from layout
+    private void initializeViews() {
+        // Find views by their IDs
+        hairStyleSpinner = findViewById(R.id.hairStyleSpinner);
+        redSeekBar = findViewById(R.id.redSeekBar);
+        greenSeekBar = findViewById(R.id.greenSeekBar);
+        blueSeekBar = findViewById(R.id.blueSeekBar);
+        colorFeatureRadioGroup = findViewById(R.id.colorFeatureRadioGroup);
+        hairRadioButton = findViewById(R.id.hairRadioButton);
+        eyesRadioButton = findViewById(R.id.eyesRadioButton);
+        skinRadioButton = findViewById(R.id.skinRadioButton);
+        randomFaceButton = findViewById(R.id.randomFaceButton);
+        faceSurfaceView = findViewById(R.id.faceSurfaceView);
+
+        // Setup a surface holder callback for the face surface view
         faceSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
@@ -53,24 +68,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
+                // Typically you handle releasing resources or pausing animations here
             }
         });
     }
 
-    private void initializeViews() {
-        hairStyleSpinner = findViewById(R.id.hairStyleSpinner);
-        redSeekBar = findViewById(R.id.redSeekBar);
-        greenSeekBar = findViewById(R.id.greenSeekBar);
-        blueSeekBar = findViewById(R.id.blueSeekBar);
-        colorFeatureRadioGroup = findViewById(R.id.colorFeatureRadioGroup);
-        hairRadioButton = findViewById(R.id.hairRadioButton);
-        eyesRadioButton = findViewById(R.id.eyesRadioButton);
-        skinRadioButton = findViewById(R.id.skinRadioButton);
-        randomFaceButton = findViewById(R.id.randomFaceButton);
-        faceSurfaceView = findViewById(R.id.faceSurfaceView);
-    }
-
+    // Setup listeners for UI components
     private void setupListeners() {
+        // Listener for hair style spinner
         hairStyleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -80,27 +85,25 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                // Handle case where no item is selected if needed
             }
         });
 
+        // Listener for color feature radio group
         colorFeatureRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             updateSeekBarProgress();
             drawFaceOnSurface();
         });
 
+        // Listener for random face button
         randomFaceButton.setOnClickListener(v -> {
             face.randomize();
             updateUIWithFace();
             drawFaceOnSurface();
         });
 
-        redSeekBar.setOnSeekBarChangeListener(createSeekBarChangeListener());
-        greenSeekBar.setOnSeekBarChangeListener(createSeekBarChangeListener());
-        blueSeekBar.setOnSeekBarChangeListener(createSeekBarChangeListener());
-    }
-
-    private SeekBar.OnSeekBarChangeListener createSeekBarChangeListener() {
-        return new SeekBar.OnSeekBarChangeListener() {
+        // Listener for seek bars
+        SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
@@ -111,45 +114,52 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                // Handle start of touch event if necessary
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                // Handle end of touch event if necessary
             }
         };
+        redSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+        greenSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+        blueSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
     }
 
+    // Update face color based on seek bar progress
     private void updateFaceColor() {
-        int red = redSeekBar.getProgress();
-        int green = greenSeekBar.getProgress();
-        int blue = blueSeekBar.getProgress();
-        int newColor = Color.rgb(red, green, blue);
-
+        int color = Color.rgb(redSeekBar.getProgress(), greenSeekBar.getProgress(), blueSeekBar.getProgress());
         if (hairRadioButton.isChecked()) {
-            face.setHairColor(newColor);
+            face.setHairColor(color);
         } else if (eyesRadioButton.isChecked()) {
-            face.setEyeColor(newColor);
+            face.setEyeColor(color);
         } else if (skinRadioButton.isChecked()) {
-            face.setSkinColor(newColor);
+            face.setSkinColor(color);
         }
     }
 
+    // Update seek bar progress based on selected color feature
     private void updateSeekBarProgress() {
+        int color = 0;
         if (hairRadioButton.isChecked()) {
-            setSeekBarsFromColor(face.getHairColor());
+            color = face.getHairColor();
         } else if (eyesRadioButton.isChecked()) {
-            setSeekBarsFromColor(face.getEyeColor());
+            color = face.getEyeColor();
         } else if (skinRadioButton.isChecked()) {
-            setSeekBarsFromColor(face.getSkinColor());
+            color = face.getSkinColor();
         }
+        setSeekBarsFromColor(color);
     }
 
+    // Set seek bar progress based on color
     private void setSeekBarsFromColor(int color) {
         redSeekBar.setProgress(Color.red(color));
         greenSeekBar.setProgress(Color.green(color));
         blueSeekBar.setProgress(Color.blue(color));
     }
 
+    // Draw the face on the surface view
     private void drawFaceOnSurface() {
         Canvas canvas = faceSurfaceView.getHolder().lockCanvas();
         if (canvas != null) {
@@ -158,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Update UI with current face attributes
     private void updateUIWithFace() {
         setSeekBarsFromColor(face.getSkinColor());
         hairStyleSpinner.setSelection(face.getHairStyle());
